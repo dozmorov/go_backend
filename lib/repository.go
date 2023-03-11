@@ -49,6 +49,7 @@ func (r *Repository) Connect() {
 	r.Session, err = mgo.Dial(r.Server)
 	if err != nil {
 		log.Fatal(err)
+		log.Println("nn!!")
 	}
 	r.Session.SetMode(mgo.Eventual, false)
 	log.Println("Connected to ", r.Server, "with", r.Database, "database.")
