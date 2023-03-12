@@ -354,7 +354,7 @@ func (r *Repository) ValidateRegistrateTicket(barcode string, term Terminal, dir
 	db.C(TICKETS_COLLECTION).Find(bson.M{"ticket_barcode": barcode, "event_id": bson.M{"$in": currentEvents.EventsIds()}}).One(&ticket)
 
 	// 
-	log.Println("TICKET ", ticket.TicketBarcode, " EVENT ", ticket.TicketTitle, " ", ticket.TicketSector, " PRICE ", ticket.TicketPrice, " TERMINAL ", term.Name, " ", direction)
+	log.Println("TERMINAL:", term.Name, direction, "TICKET:", ticket.TicketBarcode, "EVENT:", ticket.TicketTitle, ticket.TicketSector, "PRICE:", ticket.TicketPrice)
 
 	if (Ticket{}) != ticket {
 		entryItem := r.CheckTicketForEntry(ticket)
