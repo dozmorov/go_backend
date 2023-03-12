@@ -48,7 +48,6 @@ func (r *Repository) Connect() {
 	var err error
 	r.Session, err = mgo.Dial(r.Server)
 	if err != nil {
-		log.Println("nn!!")
 		log.Fatal(err)
 	}
 	r.Session.SetMode(mgo.Eventual, false)
@@ -328,6 +327,7 @@ func (r *Repository) SyncEvent(eventId int64) (Event, *Exception) {
 	event.TicketsCached = r.GetTicketsCountByEvent(event)
 	return event, nil
 }
+
 func (r *Repository) ValidateTicket(barcode string, term Terminal) (SKDResponse, *Exception) {
 	curentGroups := r.GetGroupsByTerminal(term)
 	currentEvents := r.GetActiveEventsByGroups(curentGroups)
@@ -342,8 +342,8 @@ func (r *Repository) ValidateTicket(barcode string, term Terminal) (SKDResponse,
 	//Not Found
 	ticket.TicketBarcode = barcode
 	return SKDResponse{SKDResult{ENTRY_RESULT_CODE_NOTFOUND}, ticket, Event{}, Action{}}, nil
-
 }
+
 func (r *Repository) ValidateRegistrateTicket(barcode string, term Terminal, direction string) (SKDRegistrationResponse, *Exception) {
 	if masterKeys.is(barcode) { //Master key
 		return SKDRegistrationResponse{SKDRegistrationResult{ENTRY_RESULT_CODE_ACCEPT, direction == "entry", direction == "exit"}, Ticket{}, Event{}, Action{}}, nil
@@ -353,7 +353,7 @@ func (r *Repository) ValidateRegistrateTicket(barcode string, term Terminal, dir
 	ticket := Ticket{}
 	db.C(TICKETS_COLLECTION).Find(bson.M{"ticket_barcode": barcode, "event_id": bson.M{"$in": currentEvents.EventsIds()}}).One(&ticket)
 
-	log.Println("TICKET is ", ticket)
+	log.Println("TICKET is ", ticket, terminal, direction)
 
 	if (Ticket{}) != ticket {
 		entryItem := r.CheckTicketForEntry(ticket)
@@ -397,6 +397,7 @@ func (r *Repository) ValidateRegistrateTicket(barcode string, term Terminal, dir
 	ticket.TicketBarcode = barcode
 	return SKDRegistrationResponse{SKDRegistrationResult{ENTRY_RESULT_CODE_NOTFOUND, false, false}, ticket, Event{}, Action{}}, nil
 }
+
 func (r *Repository) RegistrateTicket(barcode string, term Terminal, direction string) (SKDResult, *Exception) {
 	if masterKeys.is(barcode) { //Master key
 		return SKDResult{ENTRY_RESULT_CODE_ACCEPT}, nil
